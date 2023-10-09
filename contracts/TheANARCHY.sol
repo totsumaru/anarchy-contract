@@ -11,8 +11,9 @@ contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
     uint256 public constant MAX_SUPPLY = 1850;
     uint256 public constant MINT_PRICE = 0.05 ether;
     uint256 public constant MAX_MINT_PER_TX = 2;
-    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN");
-    address public constant OWNER = 0xEA1a2Dfbc2cF2793ef0772dc0625Cd09750747f5;
+    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR");
+    address public constant ADMIN_ADDRESS =
+        0xEA1a2Dfbc2cF2793ef0772dc0625Cd09750747f5;
 
     string public baseURI;
     string public notRevealedURI;
@@ -29,12 +30,12 @@ contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
     mapping(address => uint256) public allowList;
     mapping(address => uint256) public presaleMinted;
 
-    constructor() ERC721A("Test", "TEST") Ownable(OWNER) {
-        _grantRole(DEFAULT_ADMIN_ROLE, OWNER);
-        _grantRole(ADMIN_ROLE, OWNER);
-        _grantRole(ADMIN_ROLE, _msgSender());
+    constructor() ERC721A("Test", "TEST") Ownable(_msgSender()) {
+        _grantRole(DEFAULT_ADMIN_ROLE, ADMIN_ADDRESS);
+        _grantRole(OPERATOR_ROLE, ADMIN_ADDRESS);
+        _grantRole(OPERATOR_ROLE, _msgSender());
 
-        _setDefaultRoyalty(OWNER, 1000);
+        _setDefaultRoyalty(ADMIN_ADDRESS, 1000);
     }
 
     // ----------------------------------------------------------
@@ -102,7 +103,7 @@ contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
         external
         payable
         isUser
-        inPhase(Phase.Presale)
+        inPhase(Phase.PublicSale)
         hasMinEth(_quantity)
         withinMaxSupply(_quantity)
         withinTxLimit(_quantity)
@@ -120,57 +121,59 @@ contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
     }
 
     // ----------------------------------------------------------
-    // ADMIN functions
+    // OPERATOR functions
     // ----------------------------------------------------------
 
     function ownerMint(
         address _to,
         uint256 _quantity
-    ) external withinMaxSupply(_quantity) onlyRole(ADMIN_ROLE) {
+    ) external withinMaxSupply(_quantity) onlyRole(OPERATOR_ROLE) {
         _safeMint(_to, _quantity);
     }
 
-    function setBaseURI(string memory _uri) external onlyRole(ADMIN_ROLE) {
+    function setBaseURI(string memory _uri) external onlyRole(OPERATOR_ROLE) {
         baseURI = _uri;
     }
 
     function setNotRevealedURI(
         string memory _uri
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(OPERATOR_ROLE) {
         notRevealedURI = _uri;
     }
 
     function setExtension(
         string memory _extension
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(OPERATOR_ROLE) {
         extension = _extension;
     }
 
-    function setIsRevealed(bool _status) external onlyRole(ADMIN_ROLE) {
+    function setIsRevealed(bool _status) external onlyRole(OPERATOR_ROLE) {
         isRevealed = _status;
     }
 
-    function setPhasePaused() external onlyRole(ADMIN_ROLE) {
+    function setPhasePaused() external onlyRole(OPERATOR_ROLE) {
         phase = Phase.Paused;
     }
 
-    function setPhasePresale() external onlyRole(ADMIN_ROLE) {
+    function setPhasePresale() external onlyRole(OPERATOR_ROLE) {
         phase = Phase.Presale;
     }
 
-    function setPhasePublicSale() external onlyRole(ADMIN_ROLE) {
+    function setPhasePublicSale() external onlyRole(OPERATOR_ROLE) {
         phase = Phase.PublicSale;
     }
 
     function setDefaultRoyalty(
         address _receiver,
         uint96 _feeNumerator
-    ) public onlyRole(ADMIN_ROLE) {
+    ) public onlyRole(OPERATOR_ROLE) {
         _setDefaultRoyalty(_receiver, _feeNumerator);
     }
 
-    function withdraw() public onlyRole(ADMIN_ROLE) {
-        (bool os, ) = payable(OWNER).call{value: address(this).balance}("");
+    function withdraw() external onlyRole(OPERATOR_ROLE) {
+        (bool os, ) = payable(ADMIN_ADDRESS).call{value: address(this).balance}(
+            ""
+        );
         require(os);
     }
 
