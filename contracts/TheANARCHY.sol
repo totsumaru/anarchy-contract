@@ -22,7 +22,7 @@ contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
 
     enum Phase {
         Paused,
-        Presale,
+        ALSale,
         PublicSale
     }
     Phase public phase = Phase.Paused;
@@ -42,39 +42,10 @@ contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
     // Modifier
     // ----------------------------------------------------------
 
-    modifier isUser() {
+    modifier canMint(uint256 _quantity) {
         require(tx.origin == _msgSender(), "Caller is a contract.");
-        _;
-    }
-
-    modifier inPhase(Phase _phase) {
-        require(phase == _phase, "Wrong phase.");
-        _;
-    }
-
-    modifier hasMinEth(uint256 _quantity) {
         require(msg.value >= MINT_PRICE * _quantity, "Not enough eth");
-        _;
-    }
-
-    modifier withinMaxSupply(uint256 _quantity) {
         require(_quantity + totalSupply() <= MAX_SUPPLY, "Exceeds max supply");
-        _;
-    }
-
-    modifier withinAllowListLimit(uint256 _quantity) {
-        require(
-            _quantity + presaleMinted[_msgSender()] <= allowList[_msgSender()],
-            "Exceeds per wallet limit"
-        );
-        _;
-    }
-
-    /**
-     * @dev use only public sale
-     */
-    modifier withinTxLimit(uint256 _quantity) {
-        require(_quantity <= MAX_MINT_PER_TX, "Exceeds per Tx limit");
         _;
     }
 
@@ -82,32 +53,21 @@ contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
     // User functions
     // ----------------------------------------------------------
 
-    function presaleMint(
-        uint256 _quantity
-    )
-        external
-        payable
-        isUser
-        inPhase(Phase.Presale)
-        hasMinEth(_quantity)
-        withinMaxSupply(_quantity)
-        withinAllowListLimit(_quantity)
-    {
+    function alMint(uint256 _quantity) external payable canMint(_quantity) {
+        require(phase == Phase.ALSale, "Wrong phase.");
+        require(
+            _quantity + presaleMinted[_msgSender()] <= allowList[_msgSender()],
+            "Exceeds per wallet limit"
+        );
+
         presaleMinted[_msgSender()] += _quantity;
         _safeMint(_msgSender(), _quantity);
     }
 
-    function publicMint(
-        uint256 _quantity
-    )
-        external
-        payable
-        isUser
-        inPhase(Phase.PublicSale)
-        hasMinEth(_quantity)
-        withinMaxSupply(_quantity)
-        withinTxLimit(_quantity)
-    {
+    function publicMint(uint256 _quantity) external payable canMint(_quantity) {
+        require(phase == Phase.PublicSale, "Wrong phase.");
+        require(_quantity <= MAX_MINT_PER_TX, "Exceeds per Tx limit");
+
         _safeMint(_msgSender(), _quantity);
     }
 
@@ -127,7 +87,8 @@ contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
     function ownerMint(
         address _to,
         uint256 _quantity
-    ) external withinMaxSupply(_quantity) onlyRole(OPERATOR_ROLE) {
+    ) external onlyRole(OPERATOR_ROLE) {
+        require(_quantity + totalSupply() <= MAX_SUPPLY, "Exceeds max supply");
         _safeMint(_to, _quantity);
     }
 
@@ -155,12 +116,26 @@ contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
         phase = Phase.Paused;
     }
 
-    function setPhasePresale() external onlyRole(OPERATOR_ROLE) {
-        phase = Phase.Presale;
+    function setPhaseALSale() external onlyRole(OPERATOR_ROLE) {
+        phase = Phase.ALSale;
     }
 
     function setPhasePublicSale() external onlyRole(OPERATOR_ROLE) {
         phase = Phase.PublicSale;
+    }
+
+    function setAllowList(
+        address[] calldata _users,
+        uint256[] calldata _quantities
+    ) external onlyRole(OPERATOR_ROLE) {
+        require(
+            _users.length == _quantities.length,
+            "Users and quantities array length must match."
+        );
+
+        for (uint256 i = 0; i < _users.length; i++) {
+            allowList[_users[i]] = _quantities[i];
+        }
     }
 
     function setDefaultRoyalty(
