@@ -7,7 +7,7 @@ import { config as dotenvConfig } from "dotenv";
 dotenvConfig();
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.19",
+  solidity: "0.8.20",
   gasReporter: {
     currency: "JPY",
     gasPrice: 21,
@@ -20,11 +20,11 @@ const config: HardhatUserConfig = {
     goerli: {
       url: process.env.RPC_URL_GOERLI,
       accounts: [process.env.TEST_WALLET_SECRET_KEY!],
-    }
+    },
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
-  }
+  },
 };
 
 export default config;

@@ -1,2 +1,1 @@
-describe("TEST", function () {
-});
+describe("Test", function () {});
