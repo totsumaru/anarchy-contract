@@ -2,7 +2,7 @@ import { ethers } from "hardhat";
 import fs from "fs";
 
 async function main() {
-  const contract = await ethers.deployContract("TheANARCHY")
+  const contract = await ethers.deployContract("TEST")
   await contract.waitForDeployment();
 
   console.log(`NFT deployed to: ${contract.target}`);
@@ -10,7 +10,7 @@ async function main() {
   // contract.jsonに情報を出力
   // { "contract_address": "0x..." }
   fs.writeFileSync("contract.json", JSON.stringify({
-    contract_address: contract.address
+    contract_address: contract.target
   }, null, 2));
 }
 
