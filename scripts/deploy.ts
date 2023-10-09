@@ -1,22 +1,17 @@
 import { ethers } from "hardhat";
+import fs from "fs";
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
+  const contract = await ethers.deployContract("TheANARCHY")
+  await contract.waitForDeployment();
 
-  const lockedAmount = ethers.parseEther("0.001");
+  console.log(`NFT deployed to: ${contract.target}`);
 
-  const lock = await ethers.deployContract("Lock", [unlockTime], {
-    value: lockedAmount,
-  });
-
-  await lock.waitForDeployment();
-
-  console.log(
-    `Lock with ${ethers.formatEther(
-      lockedAmount
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.target}`
-  );
+  // contract.jsonに情報を出力
+  // { "contract_address": "0x..." }
+  fs.writeFileSync("contract.json", JSON.stringify({
+    contract_address: contract.address
+  }, null, 2));
 }
 
 // We recommend this pattern to be able to use async/await everywhere

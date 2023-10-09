@@ -1,24 +1,16 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
 // Uncomment this line to use console.log
 // import "hardhat/console.sol";
 
-contract Lock {
+contract TheANARCHY {
     uint public unlockTime;
     address payable public owner;
 
     event Withdrawal(uint amount, uint when);
 
-    constructor(uint _unlockTime) payable {
-        require(
-            block.timestamp < _unlockTime,
-            "Unlock time should be in the future"
-        );
-
-        unlockTime = _unlockTime;
-        owner = payable(msg.sender);
-    }
+    constructor() {}
 
     function withdraw() public {
         // Uncomment this line, and the import of "hardhat/console.sol", to print a log in your terminal
