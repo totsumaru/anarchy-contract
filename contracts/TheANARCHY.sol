@@ -84,7 +84,7 @@ contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
     // OPERATOR functions
     // ----------------------------------------------------------
 
-    function ownerMint(
+    function airdropMint(
         address _to,
         uint256 _quantity
     ) external onlyRole(OPERATOR_ROLE) {
@@ -92,6 +92,9 @@ contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
         _safeMint(_to, _quantity);
     }
 
+    /**
+     * @param _uri Ensure the URI ends with a '/'.
+     */
     function setBaseURI(string memory _uri) external onlyRole(OPERATOR_ROLE) {
         baseURI = _uri;
     }
@@ -136,7 +139,12 @@ contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
             uint256 newQuantity = _quantities[i];
 
             allowList[account] = newQuantity;
-            allowListSum += newQuantity - oldQuantity;
+
+            if (newQuantity > oldQuantity) {
+                allowListSum += (newQuantity - oldQuantity);
+            } else {
+                allowListSum -= (oldQuantity - newQuantity);
+            }
         }
     }
 
@@ -174,6 +182,10 @@ contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
 
     function _baseURI() internal view virtual override returns (string memory) {
         return baseURI;
+    }
+
+    function _startTokenId() internal view virtual override returns (uint256) {
+        return 1;
     }
 
     // ----------------------------------------------------------
