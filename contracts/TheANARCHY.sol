@@ -12,8 +12,7 @@ contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
     uint256 public constant MINT_PRICE = 0.05 ether;
     uint256 public constant MAX_MINT_PER_TX = 2;
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR");
-    address public constant ADMIN_ADDRESS =
-        0xEA1a2Dfbc2cF2793ef0772dc0625Cd09750747f5;
+    address public constant OWNER = 0xEA1a2Dfbc2cF2793ef0772dc0625Cd09750747f5;
 
     string public baseURI;
     string public notRevealedURI;
@@ -29,13 +28,14 @@ contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
 
     mapping(address => uint256) public allowList;
     mapping(address => uint256) public presaleMinted;
+    uint256 public allowListSum = 0;
 
-    constructor() ERC721A("Test", "TEST") Ownable(_msgSender()) {
-        _grantRole(DEFAULT_ADMIN_ROLE, ADMIN_ADDRESS);
-        _grantRole(OPERATOR_ROLE, ADMIN_ADDRESS);
+    constructor() ERC721A("Test", "TEST") Ownable(OWNER) {
+        _grantRole(DEFAULT_ADMIN_ROLE, OWNER);
+        _grantRole(OPERATOR_ROLE, OWNER);
         _grantRole(OPERATOR_ROLE, _msgSender());
 
-        _setDefaultRoyalty(ADMIN_ADDRESS, 1000);
+        _setDefaultRoyalty(OWNER, 1000);
     }
 
     // ----------------------------------------------------------
@@ -43,7 +43,7 @@ contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
     // ----------------------------------------------------------
 
     modifier canMint(uint256 _quantity) {
-        require(tx.origin == _msgSender(), "Caller is a contract.");
+        require(tx.origin == _msgSender(), "Caller is a contract");
         require(msg.value >= MINT_PRICE * _quantity, "Not enough eth");
         require(_quantity + totalSupply() <= MAX_SUPPLY, "Exceeds max supply");
         _;
@@ -54,7 +54,7 @@ contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
     // ----------------------------------------------------------
 
     function alMint(uint256 _quantity) external payable canMint(_quantity) {
-        require(phase == Phase.ALSale, "Wrong phase.");
+        require(phase == Phase.ALSale, "Wrong phase");
         require(
             _quantity + presaleMinted[_msgSender()] <= allowList[_msgSender()],
             "Exceeds per wallet limit"
@@ -65,7 +65,7 @@ contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
     }
 
     function publicMint(uint256 _quantity) external payable canMint(_quantity) {
-        require(phase == Phase.PublicSale, "Wrong phase.");
+        require(phase == Phase.PublicSale, "Wrong phase");
         require(_quantity <= MAX_MINT_PER_TX, "Exceeds per Tx limit");
 
         _safeMint(_msgSender(), _quantity);
@@ -125,16 +125,18 @@ contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
     }
 
     function setAllowList(
-        address[] calldata _users,
+        address[] calldata _accounts,
         uint256[] calldata _quantities
     ) external onlyRole(OPERATOR_ROLE) {
-        require(
-            _users.length == _quantities.length,
-            "Users and quantities array length must match."
-        );
+        require(_accounts.length == _quantities.length, "Length must match");
 
-        for (uint256 i = 0; i < _users.length; i++) {
-            allowList[_users[i]] = _quantities[i];
+        for (uint256 i = 0; i < _accounts.length; i++) {
+            address account = _accounts[i];
+            uint256 oldQuantity = allowList[account];
+            uint256 newQuantity = _quantities[i];
+
+            allowList[account] = newQuantity;
+            allowListSum += newQuantity - oldQuantity;
         }
     }
 
@@ -146,10 +148,24 @@ contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
     }
 
     function withdraw() external onlyRole(OPERATOR_ROLE) {
-        (bool os, ) = payable(ADMIN_ADDRESS).call{value: address(this).balance}(
-            ""
-        );
-        require(os);
+        uint256 sendAmount = address(this).balance;
+
+        address addr1 = payable(0xDb40277dd6B3d4f0971A982f9fE9Fd5D96905E0e);
+        address addr2 = payable(0x4b3CCD7cE7C1Ca0B0277800cd938De64214d81F3);
+        address addr3 = payable(0xEA1a2Dfbc2cF2793ef0772dc0625Cd09750747f5);
+
+        uint256 add1Value = (sendAmount * 9) / 100;
+        uint256 add2Value = (sendAmount * 3) / 100;
+        uint256 add3Value = sendAmount - add1Value - add2Value;
+
+        bool success;
+
+        (success, ) = addr1.call{value: add1Value}("");
+        require(success, "Transfer failed!");
+        (success, ) = addr2.call{value: add2Value}("");
+        require(success, "Transfer failed!");
+        (success, ) = addr3.call{value: add3Value}("");
+        require(success, "Transfer failed!");
     }
 
     // ----------------------------------------------------------
@@ -161,7 +177,7 @@ contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
     }
 
     // ----------------------------------------------------------
-    // Interface
+    // interface
     // ----------------------------------------------------------
 
     function supportsInterface(
