@@ -2,15 +2,28 @@ import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 
 import { config as dotenvConfig } from "dotenv";
+import { version } from "hardhat";
 
 // .envを読み込み
 dotenvConfig();
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.20",
+  solidity: {
+    version: "0.8.20",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200,
+      },
+    },
+  },
   gasReporter: {
+    enabled: true,
     currency: "JPY",
-    gasPrice: 21,
+    gasPrice: 10,
+    gasPriceApi:
+      "https://api.etherscan.io/api?module=proxy&action=eth_gasPrice",
+    coinmarketcap: process.env.COINMARKETCAP_API_KEY,
   },
   networks: {
     // eth: {

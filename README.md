@@ -2,14 +2,20 @@
 
 The ANARCHY のコントラクトです。
 
-FEは別プロジェクトで作成します。
+FE は別プロジェクトで作成します。
 
-## hardhatコマンド
+## hardhat コマンド
 
 テスト
 
 ```shell
 npx hardhat test
+```
+
+ガス代の試算をしてテストを実行
+
+```shell
+REPORT_GAS=true npx hardhat test
 ```
 
 デプロイ
@@ -18,7 +24,7 @@ npx hardhat test
 npx hardhat run --network goerli scripts/deploy.ts
 ```
 
-EtherscanのVerify
+Etherscan の Verify
 
 ```shell
 npx hardhat clean
