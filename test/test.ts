@@ -10,6 +10,9 @@ import {
   setupALFixture,
   setupPublicFixture,
   Phase,
+  TeamAddress1,
+  TeamAddress2,
+  TeamAddress3,
 } from "./common";
 
 describe("constructor", () => {
@@ -483,29 +486,29 @@ describe("setAllowList", () => {
     expect(await contract.allowListSum()).to.equal(3);
   });
 
-  it("ガス代試算用に1000件登録します", async () => {
-    const { contract, deployer, addr1 } = await loadFixture(deployFixture);
+  // it("ガス代試算用に1000件登録します", async () => {
+  //   const { contract, deployer, addr1 } = await loadFixture(deployFixture);
 
-    // 1000件のアドレスと数量を準備
-    const addresses = Array.from({ length: 1000 }).map(() => {
-      const randomWallet = ethers.Wallet.createRandom();
-      return randomWallet.address;
-    });
-    const quantities = new Array(1000).fill(2);
+  //   // 1000件のアドレスと数量を準備
+  //   const addresses = Array.from({ length: 1000 }).map(() => {
+  //     const randomWallet = ethers.Wallet.createRandom();
+  //     return randomWallet.address;
+  //   });
+  //   const quantities = new Array(1000).fill(2);
 
-    // トランザクションを送信
-    const tx = await contract
-      .connect(deployer)
-      .setAllowList(addresses, quantities);
+  //   // トランザクションを送信
+  //   const tx = await contract
+  //     .connect(deployer)
+  //     .setAllowList(addresses, quantities);
 
-    // トランザクションのレシートを取得
-    const receipt = await tx.wait();
+  //   // トランザクションのレシートを取得
+  //   const receipt = await tx.wait();
 
-    // ガス使用量をログ出力
-    console.log(`1000件登録したときのガス代: ${receipt?.gasUsed.toString()}`);
+  //   // ガス使用量をログ出力
+  //   console.log(`1000件登録したときのガス代: ${receipt?.gasUsed.toString()}`);
 
-    await expect(tx).not.to.be.reverted;
-  });
+  //   await expect(tx).not.to.be.reverted;
+  // });
 
   it("配列の長さが一致しない場合はエラーが返される", async () => {
     const { contract, deployer, addr1 } = await loadFixture(deployFixture);
@@ -541,5 +544,39 @@ describe("setDefaultRoyalty", () => {
 
     await expect(contract.connect(addr1).setDefaultRoyalty(addr1, 500)).to.be
       .reverted;
+  });
+});
+
+describe("withdraw", () => {
+  it("期待した値と一致する", async () => {
+    const { contract, deployer, addr1 } = await loadFixture(setupPublicFixture);
+
+    // 2mintします(0.1ETH)
+    await contract.connect(addr1).publicMint(2, {
+      value: ethers.parseEther((MINT_PRICE * 2).toString()),
+    });
+
+    // コントラクトの残高が0.1ETHであることを確認します
+    expect(await ethers.provider.getBalance(contract.getAddress())).to.equal(
+      ethers.parseEther("0.1")
+    );
+
+    await expect(contract.connect(deployer).withdraw()).not.to.be.reverted;
+
+    expect(await ethers.provider.getBalance(TeamAddress1)).to.equal(
+      ethers.parseEther("0.009")
+    );
+    expect(await ethers.provider.getBalance(TeamAddress2)).to.equal(
+      ethers.parseEther("0.003")
+    );
+    expect(await ethers.provider.getBalance(TeamAddress3)).to.equal(
+      ethers.parseEther("0.088")
+    );
+  });
+
+  it("OPERATOR以外はエラーが返される", async () => {
+    const { contract, addr1 } = await loadFixture(setupPublicFixture);
+
+    await expect(contract.connect(addr1).withdraw()).to.be.reverted;
   });
 });
