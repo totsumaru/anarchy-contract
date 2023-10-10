@@ -12,12 +12,6 @@ FE は別プロジェクトで作成します。
 npx hardhat test
 ```
 
-ガス代の試算をしてテストを実行
-
-```shell
-REPORT_GAS=true npx hardhat test
-```
-
 デプロイ
 
 ```shell

@@ -114,11 +114,39 @@ describe("alMint", () => {
   });
 
   it("最大供給量を超える場合はエラーが返される", async () => {
-    const { contract, addr1 } = await loadFixture(setupALFixture);
-    // setupで2mintされている状態で、MAX_SUPPLYのmintを実行
+    const { contract, deployer, addr1 } = await loadFixture(setupALFixture);
+    // 最大供給量+1 をaddr1のALに追加
+    await contract.connect(deployer).setAllowList([addr1], [MAX_SUPPLY + 1]);
+
+    // 最大供給量をmint -> OK
     await expect(
       contract.connect(addr1).alMint(MAX_SUPPLY, {
         value: ethers.parseEther((MAX_SUPPLY * MINT_PRICE).toString()),
+      })
+    ).not.to.be.reverted;
+
+    // 1mint -> 最大供給量を超えているためERROR
+    await expect(
+      contract.connect(addr1).alMint(1, {
+        value: ethers.parseEther(MINT_PRICE.toString()),
+      })
+    ).to.be.revertedWith("Exceeds max supply");
+  });
+
+  it("合計でALの数を超えた場合はエラーが返される", async () => {
+    const { contract, addr1 } = await loadFixture(setupALFixture);
+
+    // 2mint -> ALは2つあるためOK
+    await expect(
+      contract.connect(addr1).alMint(2, {
+        value: ethers.parseEther((MINT_PRICE * 2).toString()),
+      })
+    ).not.to.be.reverted;
+
+    // 1mint -> ALの上限を超えているためERROR
+    await expect(
+      contract.connect(addr1).alMint(1, {
+        value: ethers.parseEther(MINT_PRICE.toString()),
       })
     ).to.be.reverted;
   });
@@ -126,6 +154,17 @@ describe("alMint", () => {
   it("PhaseがPausedの場合はエラーが返される", async () => {
     const { contract, addr1 } = await loadFixture(setupALFixture);
     await contract.setPhasePaused();
+
+    await expect(
+      contract.connect(addr1).alMint(MAX_SUPPLY, {
+        value: ethers.parseEther((MAX_SUPPLY * MINT_PRICE).toString()),
+      })
+    ).to.be.revertedWith("Wrong phase");
+  });
+
+  it("PhaseがPublicSaleの場合はエラーが返される", async () => {
+    const { contract, addr1 } = await loadFixture(setupALFixture);
+    await contract.setPhasePublicSale();
 
     await expect(
       contract.connect(addr1).alMint(MAX_SUPPLY, {
@@ -154,6 +193,97 @@ describe("alMint", () => {
     await expect(
       contract.connect(addr2).alMint(1, {
         value: ethers.parseEther(MINT_PRICE.toString()),
+      })
+    ).to.be.reverted;
+  });
+});
+
+describe("publicMint", () => {
+  const setupPublicFixture = async () => {
+    const { contract, deployer, addr1, addr2 } = await loadFixture(
+      deployFixture
+    );
+    // PhaseをPublicSaleに変更
+    await contract.connect(deployer).setPhasePublicSale();
+    // mint前の供給量が0であることを確認します
+    expect(await contract.totalSupply()).to.equal(0);
+
+    return { contract, deployer, addr1, addr2 };
+  };
+
+  it("mintできる", async () => {
+    const { contract, addr1 } = await loadFixture(setupPublicFixture);
+
+    await expect(
+      contract.connect(addr1).publicMint(2, {
+        value: ethers.parseEther((MINT_PRICE * 2).toString()),
+      })
+    )
+      .to.emit(contract, "Transfer")
+      .withArgs(ethers.ZeroAddress, addr1.address, 1);
+
+    // mint後の供給量を確認します
+    expect(await contract.totalSupply()).to.equal(2);
+    expect(await contract.balanceOf(addr1.address)).to.equal(2);
+  });
+
+  it("ETHが不足している場合はエラーが返される", async () => {
+    const { contract, addr1 } = await loadFixture(setupPublicFixture);
+
+    await expect(
+      contract.connect(addr1).publicMint(1, {
+        value: 0,
+      })
+    ).to.be.reverted;
+  });
+
+  it("最大供給量を超える場合はエラーが返される", async () => {
+    const { contract, addr1 } = await loadFixture(setupPublicFixture);
+
+    const mintQuantity = MAX_SUPPLY + 1;
+    await expect(
+      contract.connect(addr1).publicMint(mintQuantity, {
+        value: ethers.parseEther((mintQuantity * MINT_PRICE).toString()),
+      })
+    ).to.be.reverted;
+  });
+
+  it("PhaseがPausedの場合はエラーが返される", async () => {
+    const { contract, addr1 } = await loadFixture(setupPublicFixture);
+    await contract.setPhasePaused();
+
+    await expect(
+      contract.connect(addr1).publicMint(1, {
+        value: ethers.parseEther(MINT_PRICE.toString()),
+      })
+    ).to.be.reverted;
+  });
+
+  it("PhaseがALSaleの場合はエラーが返される", async () => {
+    const { contract, addr1 } = await loadFixture(setupPublicFixture);
+    await contract.setPhaseALSale();
+
+    await expect(
+      contract.connect(addr1).publicMint(1, {
+        value: ethers.parseEther(MINT_PRICE.toString()),
+      })
+    ).to.be.reverted;
+  });
+
+  it("mint数が0の場合はエラーが返される", async () => {
+    const { contract, addr1 } = await loadFixture(setupPublicFixture);
+
+    await expect(contract.connect(addr1).publicMint(0, { value: 0 })).to.be
+      .reverted;
+  });
+
+  it("1Txのmint数を超えている場合はエラーが返される", async () => {
+    const { contract, addr1 } = await loadFixture(setupPublicFixture);
+    const mintQuantity = MAX_MINT_PER_TX + 1;
+
+    await expect(
+      contract.connect(addr1).publicMint(mintQuantity, {
+        value: ethers.parseEther((mintQuantity * MINT_PRICE).toString()),
       })
     ).to.be.reverted;
   });

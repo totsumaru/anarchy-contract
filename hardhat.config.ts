@@ -2,7 +2,6 @@ import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 
 import { config as dotenvConfig } from "dotenv";
-import { version } from "hardhat";
 
 // .envを読み込み
 dotenvConfig();
