@@ -9,11 +9,11 @@ import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 export const MAX_SUPPLY = 1850;
 export const MINT_PRICE = 0.05;
 export const MAX_MINT_PER_TX = 2;
-export const OWNER = "0xEA1a2Dfbc2cF2793ef0772dc0625Cd09750747f5";
+export const OWNER = "0x9282cBb5FC35db6Ce9412bC829aC4a7e7bf8c768";
 
 export const TeamAddress1 = "0x4b3CCD7cE7C1Ca0B0277800cd938De64214d81F3";
 export const TeamAddress2 = "0x227080310686D083e9ab589d739767C8cdfD4cb1";
-export const TeamAddress3 = "0xEA1a2Dfbc2cF2793ef0772dc0625Cd09750747f5";
+export const TeamAddress3 = "0x9282cBb5FC35db6Ce9412bC829aC4a7e7bf8c768";
 
 export enum Phase {
   Paused = 0,

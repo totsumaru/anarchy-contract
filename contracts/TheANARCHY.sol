@@ -12,7 +12,7 @@ contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
     uint256 public constant MINT_PRICE = 0.05 ether;
     uint256 public constant MAX_MINT_PER_TX = 2;
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR");
-    address public constant OWNER = 0xEA1a2Dfbc2cF2793ef0772dc0625Cd09750747f5;
+    address public constant OWNER = 0x9282cBb5FC35db6Ce9412bC829aC4a7e7bf8c768;
 
     string public baseURI;
     string public notRevealedURI;
@@ -160,7 +160,7 @@ contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
 
         address addr1 = payable(0x4b3CCD7cE7C1Ca0B0277800cd938De64214d81F3);
         address addr2 = payable(0x227080310686D083e9ab589d739767C8cdfD4cb1); // TODO: アドレス修正(MUGさん)
-        address addr3 = payable(0xEA1a2Dfbc2cF2793ef0772dc0625Cd09750747f5); // TODO: アドレス修正(おとうさん)
+        address addr3 = payable(0x9282cBb5FC35db6Ce9412bC829aC4a7e7bf8c768); // TODO: アドレス修正(おとうさん)
 
         uint256 add1Value = (sendAmount * 11) / 100;
         uint256 add2Value = (sendAmount * 3) / 100;
