@@ -564,13 +564,13 @@ describe("withdraw", () => {
     await expect(contract.connect(deployer).withdraw()).not.to.be.reverted;
 
     expect(await ethers.provider.getBalance(TeamAddress1)).to.equal(
-      ethers.parseEther("0.009")
+      ethers.parseEther("0.011")
     );
     expect(await ethers.provider.getBalance(TeamAddress2)).to.equal(
       ethers.parseEther("0.003")
     );
     expect(await ethers.provider.getBalance(TeamAddress3)).to.equal(
-      ethers.parseEther("0.088")
+      ethers.parseEther("0.086")
     );
   });
 

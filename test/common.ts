@@ -11,8 +11,8 @@ export const MINT_PRICE = 0.05;
 export const MAX_MINT_PER_TX = 2;
 export const OWNER = "0xEA1a2Dfbc2cF2793ef0772dc0625Cd09750747f5";
 
-export const TeamAddress1 = "0xDb40277dd6B3d4f0971A982f9fE9Fd5D96905E0e";
-export const TeamAddress2 = "0x4b3CCD7cE7C1Ca0B0277800cd938De64214d81F3";
+export const TeamAddress1 = "0x4b3CCD7cE7C1Ca0B0277800cd938De64214d81F3";
+export const TeamAddress2 = "0x227080310686D083e9ab589d739767C8cdfD4cb1";
 export const TeamAddress3 = "0xEA1a2Dfbc2cF2793ef0772dc0625Cd09750747f5";
 
 export enum Phase {

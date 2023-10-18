@@ -93,7 +93,7 @@ contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
     }
 
     /**
-     * @param _uri Ensure the URI ends with a '/'.
+     * @param _uri Ensure the URI ends with a `/`.
      */
     function setBaseURI(string memory _uri) external onlyRole(OPERATOR_ROLE) {
         baseURI = _uri;
@@ -158,11 +158,11 @@ contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
     function withdraw() external onlyRole(OPERATOR_ROLE) {
         uint256 sendAmount = address(this).balance;
 
-        address addr1 = payable(0xDb40277dd6B3d4f0971A982f9fE9Fd5D96905E0e);
-        address addr2 = payable(0x4b3CCD7cE7C1Ca0B0277800cd938De64214d81F3);
-        address addr3 = payable(0xEA1a2Dfbc2cF2793ef0772dc0625Cd09750747f5);
+        address addr1 = payable(0x4b3CCD7cE7C1Ca0B0277800cd938De64214d81F3);
+        address addr2 = payable(0x227080310686D083e9ab589d739767C8cdfD4cb1); // TODO: アドレス修正(MUGさん)
+        address addr3 = payable(0xEA1a2Dfbc2cF2793ef0772dc0625Cd09750747f5); // TODO: アドレス修正(おとうさん)
 
-        uint256 add1Value = (sendAmount * 9) / 100;
+        uint256 add1Value = (sendAmount * 11) / 100;
         uint256 add2Value = (sendAmount * 3) / 100;
         uint256 add3Value = sendAmount - add1Value - add2Value;
 
