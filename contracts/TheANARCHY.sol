@@ -150,7 +150,7 @@ contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
     function setDefaultRoyalty(
         address _receiver,
         uint96 _feeNumerator
-    ) public onlyRole(OPERATOR_ROLE) {
+    ) external onlyRole(OPERATOR_ROLE) {
         _setDefaultRoyalty(_receiver, _feeNumerator);
     }
 
