@@ -5,7 +5,6 @@ import "erc721a/contracts/ERC721A.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/common/ERC2981.sol";
-import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
 contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
     uint256 public constant MAX_SUPPLY = 1850;
