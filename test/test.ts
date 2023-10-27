@@ -567,10 +567,10 @@ describe("withdraw", () => {
       ethers.parseEther("0.011")
     );
     expect(await ethers.provider.getBalance(TeamAddress2)).to.equal(
-      ethers.parseEther("0.003")
+      ethers.parseEther("0.0055")
     );
     expect(await ethers.provider.getBalance(TeamAddress3)).to.equal(
-      ethers.parseEther("0.086")
+      ethers.parseEther("0.0835")
     );
   });
 
