@@ -7,11 +7,11 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/common/ERC2981.sol";
 
 contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
-    uint256 public constant MAX_SUPPLY = 1850;
+    uint256 public constant MAX_SUPPLY = 1550;
     uint256 public constant MINT_PRICE = 0.05 ether;
-    uint256 public constant MAX_MINT_PER_TX = 2;
+    uint256 public constant MAX_MINT_PER_TX = 5;
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR");
-    address public constant OWNER = 0x9282cBb5FC35db6Ce9412bC829aC4a7e7bf8c768;
+    address public constant OWNER = 0x8d31AbE350A5eA254da35A257e2079bD9B44a4E4;
 
     string public baseURI;
     string public notRevealedURI;
@@ -158,8 +158,8 @@ contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
         uint256 sendAmount = address(this).balance;
 
         address addr1 = payable(0x4b3CCD7cE7C1Ca0B0277800cd938De64214d81F3);
-        address addr2 = payable(0x97Db2bB6eF34486620EEB748306C0b3E2C766c3F); // TODO: アドレス修正(MUGさん)
-        address addr3 = payable(0x9282cBb5FC35db6Ce9412bC829aC4a7e7bf8c768); // TODO: アドレス修正(おとうさん)
+        address addr2 = payable(0x97Db2bB6eF34486620EEB748306C0b3E2C766c3F);
+        address addr3 = payable(OWNER);
 
         uint256 add1Value = (sendAmount * 110) / 1000;
         uint256 add2Value = (sendAmount * 55) / 1000;

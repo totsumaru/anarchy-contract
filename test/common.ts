@@ -6,14 +6,14 @@ import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 // テストの共通処理です
 // ============================
 
-export const MAX_SUPPLY = 1850;
+export const MAX_SUPPLY = 1550;
 export const MINT_PRICE = 0.05;
-export const MAX_MINT_PER_TX = 2;
-export const OWNER = "0x9282cBb5FC35db6Ce9412bC829aC4a7e7bf8c768";
+export const MAX_MINT_PER_TX = 5;
+export const OWNER = "0x8d31AbE350A5eA254da35A257e2079bD9B44a4E4";
 
 export const TeamAddress1 = "0x4b3CCD7cE7C1Ca0B0277800cd938De64214d81F3"; // Totsumaru
 export const TeamAddress2 = "0x97Db2bB6eF34486620EEB748306C0b3E2C766c3F"; // MUGさん
-export const TeamAddress3 = "0x9282cBb5FC35db6Ce9412bC829aC4a7e7bf8c768"; // おとうさん
+export const TeamAddress3 = "0x8d31AbE350A5eA254da35A257e2079bD9B44a4E4"; // おとうさん
 
 export enum Phase {
   Paused = 0,
