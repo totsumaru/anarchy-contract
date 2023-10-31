@@ -2,5 +2,9 @@
   "goerli": {
     "contract_address": "0x10C5aE4EB0EfDbD592fF8a7C77f622d65885176D",
     "date": "2023-10-18 18:29:28"
+  },
+  "eth": {
+    "contract_address": "0x1a18b2765210611bed04f73aB54095dDB68D15c3",
+    "date": "2023-10-31 23:07:04"
   }
 }

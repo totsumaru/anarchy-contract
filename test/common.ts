@@ -23,7 +23,7 @@ export enum Phase {
 
 // deployします
 export const deployFixture = async () => {
-  const factory = await ethers.getContractFactory("Test");
+  const factory = await ethers.getContractFactory("TheANARCHY");
   const [deployer, addr1, addr2] = await ethers.getSigners();
 
   const contract = await factory.deploy();

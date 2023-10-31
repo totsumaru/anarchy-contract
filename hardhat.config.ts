@@ -19,16 +19,16 @@ const config: HardhatUserConfig = {
   gasReporter: {
     enabled: true,
     currency: "JPY",
-    gasPrice: 10,
+    gasPrice: 18,
     gasPriceApi:
       "https://api.etherscan.io/api?module=proxy&action=eth_gasPrice",
     coinmarketcap: process.env.COINMARKETCAP_API_KEY,
   },
   networks: {
-    // eth: {
-    //   url: process.env.RPC_URL_ETH,
-    //   accounts: [process.env.WALLET_SECRET_KEY!],
-    // },
+    eth: {
+      url: process.env.RPC_URL_ETH,
+      accounts: [process.env.WALLET_SECRET_KEY!],
+    },
     goerli: {
       url: process.env.RPC_URL_GOERLI,
       accounts: [process.env.TEST_WALLET_SECRET_KEY!],

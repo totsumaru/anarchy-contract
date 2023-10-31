@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/common/ERC2981.sol";
 
-contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
+contract TheANARCHY is ERC721A, AccessControl, Ownable, ERC2981 {
     uint256 public constant MAX_SUPPLY = 1550;
     uint256 public constant MINT_PRICE = 0.05 ether;
     uint256 public constant MAX_MINT_PER_TX = 5;
@@ -29,7 +29,7 @@ contract Test is ERC721A, AccessControl, Ownable, ERC2981 {
     mapping(address => uint256) public presaleMinted;
     uint256 public allowListSum = 0;
 
-    constructor() ERC721A("Test", "TEST") Ownable(OWNER) {
+    constructor() ERC721A("TheANARCHY", "ANC") Ownable(OWNER) {
         _grantRole(DEFAULT_ADMIN_ROLE, OWNER);
         _grantRole(OPERATOR_ROLE, OWNER);
         _grantRole(OPERATOR_ROLE, _msgSender());

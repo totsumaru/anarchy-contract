@@ -2,7 +2,7 @@ import { ethers } from "hardhat";
 import fs from "fs";
 
 async function main() {
-  const contract = await ethers.deployContract("Test");
+  const contract = await ethers.deployContract("TheANARCHY");
   await contract.waitForDeployment();
 
   console.log(`NFT deployed to: ${contract.target}`);
